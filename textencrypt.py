@@ -79,22 +79,20 @@ class Encryptor:
     def __init__(self):
         # AES setup
         self.aes_key = get_random_bytes(16)
-        self.aes_cipher = AES.new(self.aes_key, AES.MODE_CBC)
-        self.aes_iv = self.aes_cipher.iv
+        self.aes_iv = get_random_bytes(AES.block_size)  # Generate a new IV for every operation
 
         # DES setup
         self.des_key = get_random_bytes(8)
-        self.des_cipher = DES.new(self.des_key, DES.MODE_CBC)
-        self.des_iv = self.des_cipher.iv
+        self.des_iv = get_random_bytes(DES.block_size)  # Generate a new IV for every operation
 
         # RSA setup
         self.rsa_key = RSA.generate(2048)
         self.rsa_public_key = self.rsa_key.publickey()
-        self.rsa_cipher = PKCS1_OAEP.new(self.rsa_public_key)
 
     def encrypt_aes(self, plaintext):
+        cipher = AES.new(self.aes_key, AES.MODE_CBC, self.aes_iv)
         padded_text = pad(plaintext.encode(), AES.block_size)
-        ciphertext = self.aes_cipher.encrypt(padded_text)
+        ciphertext = cipher.encrypt(padded_text)
         return base64.b64encode(self.aes_iv + ciphertext).decode('utf-8')
 
     def decrypt_aes(self, encrypted_text):
@@ -106,8 +104,9 @@ class Encryptor:
         return plaintext.decode('utf-8')
 
     def encrypt_des(self, plaintext):
+        cipher = DES.new(self.des_key, DES.MODE_CBC, self.des_iv)
         padded_text = pad(plaintext.encode(), DES.block_size)
-        ciphertext = self.des_cipher.encrypt(padded_text)
+        ciphertext = cipher.encrypt(padded_text)
         return base64.b64encode(self.des_iv + ciphertext).decode('utf-8')
 
     def decrypt_des(self, encrypted_text):
@@ -119,12 +118,14 @@ class Encryptor:
         return plaintext.decode('utf-8')
 
     def encrypt_rsa(self, plaintext):
-        ciphertext = self.rsa_cipher.encrypt(plaintext.encode())
+        cipher = PKCS1_OAEP.new(self.rsa_public_key)
+        ciphertext = cipher.encrypt(plaintext.encode())
         return base64.b64encode(ciphertext).decode('utf-8')
 
     def decrypt_rsa(self, encrypted_text):
         ciphertext = base64.b64decode(encrypted_text)
-        plaintext = PKCS1_OAEP.new(self.rsa_key).decrypt(ciphertext)
+        cipher = PKCS1_OAEP.new(self.rsa_key)
+        plaintext = cipher.decrypt(ciphertext)
         return plaintext.decode('utf-8')
 
 if __name__ == "__main__":
