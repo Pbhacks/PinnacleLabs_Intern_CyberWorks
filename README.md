@@ -1,5 +1,9 @@
 # Advanced Password Analyzer and Suggester App
 
+![Alt text](https://github.com/Pbhacks/PinnacleLabs_Intern_CyberWorks/blob/main/sample%20image/1.png)
+
+
+
 Welcome to the **Advanced Password Analyzer and Suggester App**! This application provides a powerful and intuitive platform for users to analyze the strength of their passwords, receive suggestions for improvement, and generate secure passwords. Built with a modern graphical user interface (GUI) using `customtkinter`, it combines aesthetics with functionality, ensuring a seamless user experience.
 
 ## Features
